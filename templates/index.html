@@ -1,0 +1,124 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Event Attendee Registration</title>  
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
+</head> 
+<style>
+    body {  
+        font-family: Arial, sans-serif;  
+        margin: 0;  
+        padding: 0;  
+        background-color: #f4f4f4;  
+    }  
+    
+    .container {  
+        max-width: 600px;  
+        margin: 50px auto;  
+        padding: 20px;  
+        background: white;  
+        border-radius: 8px;  
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  
+    }  
+    
+    h1 {  
+        text-align: center;  
+        color: #333;  
+    }  
+    
+    label {  
+        display: block;  
+        margin: 10px 0 5px;  
+        color: #555;  
+    }  
+    
+    input[type="text"], button {  
+        width: calc(100% - 20px);  
+        padding: 10px;  
+        margin-bottom: 15px;  
+        border: 1px solid #ddd;  
+        border-radius: 4px;  
+    }  
+    
+    button {  
+        background-color: #28a745;  
+        color: white;  
+        border: none;  
+        cursor: pointer;  
+        font-size: 16px;  
+    }  
+    
+    button:hover {  
+        background-color: #218838;  
+    }  
+    
+    #qr-code {  
+        text-align: center;  
+        margin-top: 20px;  
+    }  
+    
+    #qr-img {  
+        margin-top: 10px;  
+        max-width: 100%;  
+        height: auto;  
+    }
+</style> 
+<body>  
+    <div class="container">  
+        <h1>Event Attendee Registration</h1>  
+        <form id="attendee-form">  
+            <label for="Maqaa">Maqaa:</label>  
+            <input type="text" id="Maqaa" name="Maqaa" required>  
+
+            <label for="Mal ajaja">mal ajaja:</label>  
+            <input type="text" id="Mal ajaja" name="Mal ajaja" required>  
+
+            <label for="Hagam">Hagam:</label>  
+            <input type="text" id="Hagam" name="Hagam" required>  
+
+            <label for="Kafaltii">Kafaltii:</label>  
+            <input type="text" id="Kafaltii" name="Kafaltii" required>  
+
+            <label for="Haftee">Haftee:</label>  
+            <input type="text" id="Haftee" name="Haftee" required>  
+
+            <button type="submit">Generate QR Code</button>  
+        </form>  
+
+        <div id="qr-code">  
+            <h2>Generated QR Code:</h2>  
+            <img id="qr-img" src="" alt="" style="display:none;">  
+            <div id="qr-details" style="display:none;"></div>  
+        </div>  
+    </div>  
+
+    <script>  
+        $(document).ready(function() {  
+            $('#attendee-form').on('submit', function(e) {  
+                e.preventDefault(); // Prevent page refresh  
+
+                $.post("/generate", $(this).serialize(), function(data) {  
+                    if (data.qr_img) {  
+                        $('#qr-img').attr('src', data.qr_img).show();  
+                        $('#qr-details').html(`  
+                            <p>Event Name: ${data.Maqaa}</p>  
+                            <p>Name: ${data['Mal ajaja']}</p>  
+                            <p>Designation: ${data.Hagam}</p>  
+                            <p>Phone: ${data.Kafaltii}</p>  
+                            <p>Access: ${data.Haftee}</p>  
+                            <p>ID: ${data.id}</p>  
+                        `).show();  
+                    } else {  
+                        alert(`Error: ${data.error}`);  
+                    }  
+                }).fail(function(jqXHR) {  
+                    alert(`Request failed: ${jqXHR.responseJSON.error}`);  
+                });  
+            });  
+        });  
+    </script>  
+</body>  
+</html>
